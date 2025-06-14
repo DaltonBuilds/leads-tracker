@@ -3,8 +3,15 @@ let myLeads = [];
 const inputEl = document.getElementById("input-el");
 const inputBtn = document.getElementById("input-btn");
 const ulEl = document.getElementById("ul-el");
+const deleteBtn = document.getElementById("delete-btn");
 
-let savedLeads = localStorage.getItem("myLeads");
+deleteBtn.addEventListener("dblclick", function () {
+  myLeads = [];
+  localStorage.setItem("myLeads", JSON.stringify(myLeads));
+  renderLeads();
+});
+
+const savedLeads = localStorage.getItem("myLeads");
 if (savedLeads) {
   myLeads = JSON.parse(savedLeads);
 }
