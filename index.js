@@ -8,7 +8,7 @@ const deleteBtn = document.getElementById("delete-btn");
 deleteBtn.addEventListener("dblclick", function () {
   myLeads = [];
   localStorage.setItem("myLeads", JSON.stringify(myLeads));
-  renderLeads();
+  render(myLeads);
 });
 
 const savedLeads = localStorage.getItem("myLeads");
@@ -16,22 +16,22 @@ if (savedLeads) {
   myLeads = JSON.parse(savedLeads);
 }
 
-renderLeads();
+render(myLeads);
 
 inputBtn.addEventListener("click", function () {
   myLeads.push(inputEl.value);
   inputEl.value = "";
   localStorage.setItem("myLeads", JSON.stringify(myLeads));
-  renderLeads();
+  render(myLeads);
 });
 
-function renderLeads() {
+function render(leads) {
   let listItems = "";
-  for (let i = 0; i < myLeads.length; i++) {
+  for (let i = 0; i < leads.length; i++) {
     listItems += `
             <li>
-                <a target='_blank' href='${myLeads[i]}'>
-                    ${myLeads[i]}
+                <a target='_blank' href='${leads[i]}'>
+                    ${leads[i]}
                 </a>
             </li>
         `;
