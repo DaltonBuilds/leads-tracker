@@ -1,37 +1,37 @@
-// chrome://extensions/
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  push,
+  onValue,
+  remove,
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+const firebaseConfig = {
+  databaseURL: import.meta.env.VITE_FIREBASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const referenceInDB = ref(database, "leads");
+
 let myLeads = [];
 const inputEl = document.getElementById("input-el");
 const inputBtn = document.getElementById("input-btn");
 const ulEl = document.getElementById("ul-el");
 const deleteBtn = document.getElementById("delete-btn");
-const tabBtn = document.getElementById("tab-btn");
-
-tabBtn.addEventListener("click", function () {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    myLeads.push(tabs[0].url);
-    localStorage.setItem("myLeads", JSON.stringify(myLeads));
-    render(myLeads);
-  });
-});
 
 deleteBtn.addEventListener("dblclick", function () {
-  myLeads = [];
-  localStorage.setItem("myLeads", JSON.stringify(myLeads));
-  render(myLeads);
+  remove(referenceInDB);
+  ulEl.innerHTML = "";
 });
-
-const savedLeads = localStorage.getItem("myLeads");
-if (savedLeads) {
-  myLeads = JSON.parse(savedLeads);
-}
 
 render(myLeads);
 
 inputBtn.addEventListener("click", function () {
-  myLeads.push(inputEl.value);
+  push(referenceInDB, inputEl.value);
   inputEl.value = "";
-  localStorage.setItem("myLeads", JSON.stringify(myLeads));
-  render(myLeads);
 });
 
 function render(leads) {
@@ -47,3 +47,11 @@ function render(leads) {
   }
   ulEl.innerHTML = listItems;
 }
+
+onValue(referenceInDB, function (snapshot) {
+  if (snapshot.exists()) {
+    const snapshotValues = snapshot.val();
+    const leads = Object.values(snapshotValues);
+    render(leads);
+  }
+});
